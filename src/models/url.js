@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
 
-const connectionUrl =
-  "mongodb+srv://<username>:<password>@cluster0.lswp6.mongodb.net/?retryWrites=true&w=majority";
-
-mongoose.connect(connectionUrl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-  ssl: true,
-  sslValidate: true,
-  sslCA: `${__dirname}/cacertificate.crt`
-});
+const URLSchema = mongoose.Schema(
+  {
+    urlShortCode: String,
+    actualURL: String,
+    shortenedUrl: String
+  },
+  {
+    timestamps: true
+  }
+);
+const URL = mongoose.model("URL", URLSchema);
+module.exports = URL;
