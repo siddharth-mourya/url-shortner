@@ -1,10 +1,12 @@
-const router = require("express").Router();
-const isUrl = require("is-url");
-const shortid = require("shortid");
-const Url = require("../models/Url");
-const BASE_URL = require("../constants/index");
+import Router from "express";
+import isUrl from "is-url";
+import shortid from "shortid";
+import { BASE_URL } from "../constants/index.js";
+import { Url } from "../models/Url.js";
 
-router.get("/:code", async (req, res) => {
+const urlRouter = Router();
+
+urlRouter.get("/:code", async (req, res) => {
   try {
     const url = await Url.findOne({
       urlShortCode: req.params.code,
@@ -20,7 +22,8 @@ router.get("/:code", async (req, res) => {
   }
 });
 
-router.post("/shorten", async (req, res) => {
+urlRouter.post("/shorten", async (req, res) => {
+  console.log("-", BASE_URL);
   let { actualUrl } = req.body;
   const urlShortCode = shortid.generate();
   if (!(actualUrl.includes("http") || actualUrl.includes("https"))) {
@@ -52,4 +55,4 @@ router.post("/shorten", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default urlRouter;
