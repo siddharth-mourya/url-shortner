@@ -1,1 +1,1 @@
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://url-2-qr.herokuapp.com";
