@@ -1,14 +1,13 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const URLSchema = mongoose.Schema(
   {
     urlShortCode: String,
     actualUrl: String,
-    shortenedUrl: String
+    shortenedUrl: String,
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
-const Url = mongoose.model("Url", URLSchema, 'Url');
-module.exports = Url;
+export const Url = mongoose.model("Url", URLSchema, "Url");

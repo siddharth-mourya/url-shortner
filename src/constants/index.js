@@ -1,1 +1,1 @@
-const BASE_URL = "https://url-2-qr.herokuapp.com";
+export const BASE_URL = "https://url-2-qr.herokuapp.com";
