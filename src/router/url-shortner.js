@@ -1,54 +1,55 @@
 const router = require("express").Router();
-const validUrl = require("valid-url");
+const isUrl = require("is-url");
 const shortid = require("shortid");
+const Url = require("../models/Url");
+const BASE_URL = require("../constants/index");
 
-const baseURL = "https://localhost:3000";
-
-router.get("/:code", (req, res) => {
-    try {
-        const url = await URL.findOne({
-            urlShortCode: req.params.code
-        })
-        if (url) {
-            return res.redirect(url.actualUrl)
-        } else {
-            return res.status(404).send('No URL Found')
-        }
+router.get("/:code", async (req, res) => {
+  try {
+    const url = await Url.findOne({
+      urlShortCode: req.params.code,
+    });
+    if (url) {
+      return res.redirect(url.actualUrl);
+    } else {
+      return res.status(404).send({ error: "No Url Found" });
     }
-    catch (err) {
-        console.error(err)
-        res.status(500).json('Server Error')
-    }
-});
-
-router.post("/shorten", (req, res) => {
-  const { actualUrl } = req.body;
-  const urlShortCode = shortid.generate();
-  if (validUrl.isUri(actualUrl)) {
-    try {
-        let url = await URL.findOne({
-            actualUrl
-        })
-        if (url) {
-            res.send(url)
-        } else {
-            const shortenedUrl = baseUrl + '/' + urlShortCode
-            url = new Url({
-                actualUrl,
-                shortenedUrl,
-                urlShortCode
-            })
-            await url.save()
-            res.send(url)
-        }
-    } catch (error) {
-      res.status(500).send("Server Error");
-    }
-  } else {
-    res.status(401).send("Invalid URL");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ error: "Server Error" });
   }
 });
 
-router.post("/generate-qr", (req, res) => {});
+router.post("/shorten", async (req, res) => {
+  let { actualUrl } = req.body;
+  const urlShortCode = shortid.generate();
+  if (!(actualUrl.includes("http") || actualUrl.includes("https"))) {
+    actualUrl = "https://" + actualUrl;
+  }
+  if (isUrl(actualUrl)) {
+    try {
+      let url = await Url.findOne({
+        actualUrl,
+      });
+      if (url) {
+        res.send(url);
+      } else {
+        const shortenedUrl = BASE_URL + "/" + urlShortCode;
+        url = new Url({
+          actualUrl,
+          shortenedUrl,
+          urlShortCode,
+        });
+        await url.save();
+        res.send(url);
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({ error: "Server Error" });
+    }
+  } else {
+    res.status(401).send({ error: "Invalid Url" });
+  }
+});
 
 module.exports = router;
